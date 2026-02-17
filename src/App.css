@@ -1,53 +1,43 @@
-body {
-  margin: 0;
-  background: #0f0f1a;
-  color: white;
-  font-family: Arial, sans-serif;
+@import "tailwindcss";
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
   text-align: center;
 }
 
-.game-container {
-  padding: 20px;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-h1 {
-  color: #00ffff;
-  text-shadow: 0 0 15px cyan;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.info {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-bottom: 20px;
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
 }
 
-.board {
-  display: grid;
-  grid-template-columns: repeat(10, 30px);
-  grid-template-rows: repeat(20, 30px);
-  gap: 2px;
-  justify-content: center;
-  background: #1a1a2e;
-  padding: 10px;
-  border-radius: 15px;
-  box-shadow: 0 0 25px #00ffff;
+.card {
+  padding: 2em;
 }
 
-.cell {
-  width: 30px;
-  height: 30px;
-  background: #111;
-  border-radius: 5px;
-}
-
-.filled {
-  background: linear-gradient(45deg, cyan, blue);
-  box-shadow: 0 0 10px cyan;
-}
-
-.game-over {
-  color: red;
-  margin-top: 20px;
-  font-size: 24px;
+.read-the-docs {
+  color: #888;
 }

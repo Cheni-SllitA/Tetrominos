@@ -1,3 +1,6 @@
+import "tailwindcss";
+
+
 const GameBoard = () => {
   // Creating a 20x10 empty grid for the UI preview
   const rows = 20;

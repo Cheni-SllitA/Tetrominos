@@ -1,3 +1,4 @@
+import "tailwindcss";
 import { Heart, Shield } from 'lucide-react';
 
 const StatsPanel = () => {

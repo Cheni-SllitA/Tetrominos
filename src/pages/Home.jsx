@@ -1,3 +1,4 @@
+import "tailwindcss";
 import Navbar from '../components/Navbar';
 import GameBoard from '../components/GameBoard';
 import StatsPanel from '../components/StatsPanel';

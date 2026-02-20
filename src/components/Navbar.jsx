@@ -1,3 +1,6 @@
+
+import "tailwindcss";
+
 const Navbar = () => {
   return (
     <div className="navbar">

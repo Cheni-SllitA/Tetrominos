@@ -1,3 +1,6 @@
+import "tailwindcss";
+
+
 const Controls = () => {
   return (
     <div className="controls">

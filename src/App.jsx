@@ -1,7 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Leaderboard from "./components/Leaderboard";
-import Home from "./pages/Home"; // your main page or Tetrominos page
+import Login from "./components/Login";
+import Register from "./components/Register";
+
+import Home from "./pages/Home"; 
 
 function App() {
   return (
@@ -10,6 +13,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );

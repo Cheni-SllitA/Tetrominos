@@ -20,6 +20,12 @@ const Navbar = () => {
         >
           Leaderboard
         </button>
+        <button
+          className="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-md text-sm"
+          onClick={() => navigate("/login")}
+        >
+          Login
+        </button>
         <button className="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-md text-sm">
           Logout
         </button>

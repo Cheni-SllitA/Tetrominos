@@ -4,7 +4,7 @@ import { Heart, Shield } from 'lucide-react';
 const StatsPanel = () => {
   return (
     <div className="space-y-4">
-      <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
+      {/* <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-lg">
         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2 mb-3">
           <Shield size={14} className="text-cyan-400" /> Core Stability
         </label>
@@ -15,7 +15,7 @@ const StatsPanel = () => {
           <span>STABLE</span>
           <span>75%</span>
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3 block">

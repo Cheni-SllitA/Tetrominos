@@ -15,6 +15,7 @@ const Home = () => {
         <div className="lg:col-span-3 order-2 lg:order-1 space-y-6">
           <StatsPanel />
           <NextPiece />
+          <Controls />
         </div>
 
         {/* Center: The Vault (Game Board) */}
@@ -27,11 +28,7 @@ const Home = () => {
 
         {/* Right: Controls & Info */}
         <div className="lg:col-span-3 order-3 space-y-6">
-          <Controls />
-          <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 text-xs text-slate-500 leading-relaxed">
-            <p className="font-bold mb-1 uppercase text-indigo-400">System Note:</p>
-            Clear lines to strengthen Core Stability. Fail to clear, and system access will be terminated.
-          </div>
+          
         </div>
       </main>
     </div>

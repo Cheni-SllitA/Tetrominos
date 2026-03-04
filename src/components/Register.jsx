@@ -2,6 +2,7 @@ import "tailwindcss";
 import { useState } from "react";
 import { registerUser } from "../services/authService";
 import { createUserProfile } from "../services/userService";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -10,6 +11,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -30,6 +32,7 @@ const Register = () => {
       await createUserProfile(user, username);
 
       alert("Account created successfully!");
+      navigate("/login", { replace: true });
 
     } catch (err) {
       setError(err.message);

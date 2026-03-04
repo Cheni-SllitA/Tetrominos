@@ -23,6 +23,7 @@ const Login = () => {
                   type="text"
                   placeholder="Enter username"
                   className="w-full px-4 py-2 rounded-md bg-slate-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  required
                 />
               </div>
 
@@ -35,6 +36,7 @@ const Login = () => {
                   type="password"
                   placeholder="Enter password"
                   className="w-full px-4 py-2 rounded-md bg-slate-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  required
                 />
               </div>
 

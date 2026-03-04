@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { fetchHeartPuzzle } from "../services/heartService";
 
 const ROWS = 10;
 const COLS = 10;
@@ -41,6 +42,47 @@ export const useGame = () => {
   const [gameOver, setGameOver] = useState(false);
   const [paused, setPaused] = useState(false);
 
+  const [lives, setLives] = useState(2);
+  const [checkingHeart, setCheckingHeart] = useState(false);
+  const [heartPuzzle, setHeartPuzzle] = useState(null);
+  const [showHeartModal, setShowHeartModal] = useState(false);
+  const [heartInProgress, setHeartInProgress] = useState(false);
+
+  const handleGameOver = async () => {
+  if (heartInProgress) return;   // STOP LOOP
+
+  setHeartInProgress(true);
+
+  if (lives > 0) {
+    const puzzle = await fetchHeartPuzzle();
+
+    if (puzzle) {
+      setHeartPuzzle(puzzle);
+      setShowHeartModal(true);
+      return;
+    }
+  }
+
+  setGameOver(true);
+};
+
+  const submitHeartAnswer = (answer) => {
+    if (!heartPuzzle) return;
+
+    if (Number(answer) === Number(heartPuzzle.solution)) {
+      // Correct answer → revive
+      setLives((prev) => prev - 1);
+      setBoard(emptyBoard());
+      setCurrent(withSpawnPosition(randomPiece()));
+      setShowHeartModal(false);
+      setGameOver(false);
+    } else {
+      // Wrong answer → real game over
+      setShowHeartModal(false);
+      setGameOver(true);
+    }
+    setHeartInProgress(false);
+  };
   const collision = useCallback(
     (shape, pos) => {
       return shape.some((row, r) =>
@@ -104,7 +146,7 @@ export const useGame = () => {
       );
 
       if (spawnBlocked) {
-        setGameOver(true);
+        handleGameOver();
       } else {
         setCurrent(nextPiece);
       }
@@ -159,9 +201,10 @@ export const useGame = () => {
     current,
     score,
     gameOver,
-    paused,
+    lives,
+    showHeartModal,
+    heartPuzzle,
+    submitHeartAnswer,
     move,
-    rotate,
-    setPaused,
   };
 };

@@ -1,7 +1,7 @@
 import "tailwindcss";
 import { Heart } from "lucide-react";
 
-const StatsPanel = ({ gameOver, checkingHeart }) => {
+const StatsPanel = ({ gameOver, checkingHeart, lives }) => {
   return (
     <div className="space-y-4">
       <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
@@ -11,12 +11,10 @@ const StatsPanel = ({ gameOver, checkingHeart }) => {
 
         <div className="flex gap-3">
           <Heart fill="#f43f5e" className="text-rose-500" />
-          <Heart fill="#f43f5e" className="text-rose-500" />
-          <Heart className="text-slate-700" />
         </div>
 
-        {gameOver && checkingHeart && (
-          <p className="text-xs text-cyan-400 mt-3">
+        {checkingHeart && (
+          <p className="text-xs text-cyan-400 mt-3 animate-pulse">
             Checking Heart API...
           </p>
         )}

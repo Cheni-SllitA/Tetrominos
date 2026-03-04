@@ -1,3 +1,4 @@
+import react from "react"
 const GameBoard = ({ board, current, gameOver }) => {
   return (
     <div className="bg-slate-900 p-4 rounded-xl border-4 border-slate-800 flex justify-center relative">

@@ -23,6 +23,12 @@ export const useGameControls = ({ move, setPaused, gameOver }) => {
         return;
       }
 
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        move("rotate")
+        return;
+      }
+
       if (event.key.toLowerCase() === "p") {
         setPaused((prev) => !prev);
       }

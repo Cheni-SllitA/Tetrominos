@@ -19,7 +19,7 @@ const Home = () => {
       <main className="max-w-6xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-3 order-2 lg:order-1 space-y-6">
           <StatsPanel gameOver={game.gameOver} />
-          <NextPiece />
+          {/* <NextPiece /> */}
           <Controls
             paused={game.paused}
             gameOver={game.gameOver}
@@ -35,7 +35,10 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-3 order-3 space-y-6"></div>
+        {/*components to the right */}
+        <div className="lg:col-span-3 order-3 space-y-6">
+          
+        </div>
       </main>
     </div>
   );

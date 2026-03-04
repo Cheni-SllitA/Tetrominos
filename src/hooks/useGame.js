@@ -117,6 +117,20 @@ export const useGame = () => {
     (dir) => {
       if (paused || gameOver) return;
 
+      if (dir === "rotate") {
+        const rotatedShape = rotate(current.shape);
+
+        // prevent rotating out of bounds / into blocks
+        if (!collision(rotatedShape, current.position)) {
+          setCurrent((prev) => ({
+            ...prev,
+            shape: rotatedShape,
+          }));
+        }
+
+        return;
+      }
+
       const newPos = { ...current.position };
       if (dir === "left") newPos.col--;
       if (dir === "right") newPos.col++;

@@ -49,22 +49,24 @@ export const useGame = () => {
   const [heartInProgress, setHeartInProgress] = useState(false);
 
   const handleGameOver = async () => {
-  if (heartInProgress) return;   // STOP LOOP
+    if (heartInProgress) return;
 
-  setHeartInProgress(true);
+    setHeartInProgress(true);
 
-  if (lives > 0) {
-    const puzzle = await fetchHeartPuzzle();
+    if (lives > 0) {
+      const puzzle = await fetchHeartPuzzle();
 
-    if (puzzle) {
-      setHeartPuzzle(puzzle);
-      setShowHeartModal(true);
-      return;
+      if (puzzle) {
+        setHeartPuzzle(puzzle);
+        setShowHeartModal(true);
+        // Still mark gameOver so UI shows overlay/button
+        setGameOver(true);
+        return;
+      }
     }
-  }
 
-  setGameOver(true);
-};
+    setGameOver(true);
+  };
 
   const submitHeartAnswer = (answer) => {
     if (!heartPuzzle) return;
@@ -206,5 +208,12 @@ export const useGame = () => {
     heartPuzzle,
     submitHeartAnswer,
     move,
+    emptyBoard,
+    withSpawnPosition,
+    randomPiece,
+    setBoard,
+    setCurrent,
+    setScore,
+    setGameOver
   };
 };

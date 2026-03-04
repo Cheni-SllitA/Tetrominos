@@ -1,10 +1,12 @@
 import { useGame } from "../hooks/useGame";
 import { useGameControls } from "../hooks/useGameControls";
 
+
 import GameBoard from "../components/GameBoard";
 import StatsPanel from "../components/StatsPanel";
 import NextPiece from "../components/NextPiece";
 import Controls from "../components/Controls";
+import HeartModal from "../components/HeartModal";
 
 const Home = () => {
   const game = useGame();
@@ -26,6 +28,12 @@ const Home = () => {
             onMove={game.move}
             onPauseToggle={togglePause}
           />
+          {game.showHeartModal && (
+  <HeartModal
+    puzzle={game.heartPuzzle}
+    onSubmit={game.submitHeartAnswer}
+  />
+)}
         </div>
 
         <div className="lg:col-span-6 order-1 lg:order-2">
@@ -37,7 +45,7 @@ const Home = () => {
 
         {/*components to the right */}
         <div className="lg:col-span-3 order-3 space-y-6">
-          
+
         </div>
       </main>
     </div>

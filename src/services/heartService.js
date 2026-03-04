@@ -1,13 +1,14 @@
-export const checkHeart = async () => {
+export const fetchHeartPuzzle = async () => {
   try {
     const response = await fetch(
-      "https://marcconrad.com/uob/heart/"
+      "https://marcconrad.com/uob/heart/api.php"
     );
+
     const data = await response.json();
 
-    return data === true || data?.alive === true;
+    return data; // return whole object
   } catch (error) {
     console.error("Heart API failed:", error);
-    return false;
+    return null;
   }
 };

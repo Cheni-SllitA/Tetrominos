@@ -199,21 +199,22 @@ export const useGame = () => {
   }, [move, paused, gameOver]);
 
   return {
-    board,
-    current,
-    score,
-    gameOver,
-    lives,
-    showHeartModal,
-    heartPuzzle,
-    submitHeartAnswer,
-    move,
-    emptyBoard,
-    withSpawnPosition,
-    randomPiece,
-    setBoard,
-    setCurrent,
-    setScore,
-    setGameOver
+  board,
+  current,
+  score,
+  gameOver,
+  lives,
+  showHeartModal,
+  heartPuzzle,
+  submitHeartAnswer,
+  move,
+  emptyBoard,
+  withSpawnPosition,
+  randomPiece,
+  setBoard,
+  setCurrent,
+  setScore,
+  setGameOver,
+  setShowHeartModal
   };
 };

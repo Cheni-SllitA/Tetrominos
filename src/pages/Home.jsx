@@ -9,10 +9,15 @@ import Controls from "../components/Controls";
 import HeartModal from "../components/HeartModal";
 
 const Home = () => {
-  const [showHeart, setShowHeart] = useState(false);
+
   const game = useGame();
 
-  const handleHeartClick = () => setShowHeart(true);
+  const handleHeartClick = () => {
+    game.setShowHeartModal(true);
+  };
+
+  const [gameOver, setGameOver] = useState(false);
+  const [showHeart, setShowHeart] = useState(false);
 
   const { togglePause } = useGameControls({
     move: game.move,
@@ -38,13 +43,11 @@ const Home = () => {
             onMove={game.move}
             onPauseToggle={togglePause}
           />
-          {showHeart && (
+          {game.showHeartModal && (
             <HeartModal
-              onSuccess={() => {
-                setShowHeart(false);
-                resetGame();
-              }}
-              onClose={() => setShowHeart(false)}
+              puzzle={game.heartPuzzle}
+              onSubmit={game.submitHeartAnswer}
+              onClose={() => game.setShowHeartModal(false)}
             />
           )}
         </div>

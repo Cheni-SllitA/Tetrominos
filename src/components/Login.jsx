@@ -66,6 +66,7 @@ const Login = () => {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+          <a href="/register">Register</a>
         </form>
       </div>
     </div>

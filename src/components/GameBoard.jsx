@@ -1,9 +1,14 @@
 import React from "react";
 import { useState } from "react";
-const GameBoard = ({ board, current, gameOver, onHeartClick }) => {
+import { updateUserScore } from "../services/scoreService";
+const GameBoard = ({ board, current, gameOver, score, onHeartClick }) => {
   return (
 
     <div className="bg-slate-900 p-4 rounded-xl border-4 border-slate-800 flex justify-center relative">
+
+      <div className="absolute top-2 left-2 text-white font-bold">
+        Score: {score}
+      </div>
       <div className="grid grid-cols-10 gap-1 bg-black p-1 rounded">
         {board.map((row, r) =>
           row.map((cell, c) => {

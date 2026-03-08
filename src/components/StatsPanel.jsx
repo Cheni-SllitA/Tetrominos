@@ -19,6 +19,7 @@ const StatsPanel = ({ gameOver, checkingHeart, lives }) => {
           </p>
         )}
       </div>
+      
     </div>
   );
 };

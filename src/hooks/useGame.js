@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchHeartPuzzle } from "../services/heartService";
+import { updateUserScore } from "../services/scoreService";
 
 const ROWS = 10;
 const COLS = 10;
@@ -129,7 +130,13 @@ export const useGame = () => {
       const clearedRows = ROWS - keptRows.length;
 
       if (clearedRows > 0) {
-        setScore((prev) => prev + clearedRows * 100);
+        setScore((prev) => {
+          const newScore = prev + clearedRows * 100;
+
+          updateUserScore(newScore); // update Firebase
+
+          return newScore;
+        });
       }
 
       const rebuiltBoard = [
@@ -199,22 +206,22 @@ export const useGame = () => {
   }, [move, paused, gameOver]);
 
   return {
-  board,
-  current,
-  score,
-  gameOver,
-  lives,
-  showHeartModal,
-  heartPuzzle,
-  submitHeartAnswer,
-  move,
-  emptyBoard,
-  withSpawnPosition,
-  randomPiece,
-  setBoard,
-  setCurrent,
-  setScore,
-  setGameOver,
-  setShowHeartModal
+    board,
+    current,
+    score,
+    gameOver,
+    lives,
+    showHeartModal,
+    heartPuzzle,
+    submitHeartAnswer,
+    move,
+    emptyBoard,
+    withSpawnPosition,
+    randomPiece,
+    setBoard,
+    setCurrent,
+    setScore,
+    setGameOver,
+    setShowHeartModal
   };
 };

@@ -16,8 +16,8 @@ const Home = () => {
     game.setShowHeartModal(true);
   };
 
-  const [gameOver, setGameOver] = useState(false);
-  const [showHeart, setShowHeart] = useState(false);
+  // const [gameOver, setGameOver] = useState(false);
+  // const [showHeart, setShowHeart] = useState(false);
 
   const { togglePause } = useGameControls({
     move: game.move,
@@ -36,7 +36,7 @@ const Home = () => {
     <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-indigo-500">
       <main className="max-w-6xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-3 order-2 lg:order-1 space-y-6">
-          <StatsPanel gameOver={game.gameOver} />
+          <StatsPanel score={game.score} lives={game.lives} />
           <Controls
             paused={game.paused}
             gameOver={game.gameOver}
@@ -59,6 +59,7 @@ const Home = () => {
               board={game.board}
               current={game.current}
               gameOver={game.gameOver}
+              score={game.score}
               onHeartClick={handleHeartClick}
             />
           </div>

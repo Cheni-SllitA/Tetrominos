@@ -6,6 +6,7 @@ import { auth } from "../services/firebase";
 import { logoutUser } from "../services/authService";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
+import { soundManager } from "../services/soundManager";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -50,13 +51,14 @@ const Navbar = () => {
 
         {username ? (
           <>
-            <span className="text-sm text-cyan-400">👤 {username}</span>
+            
             <button
               className="bg-red-700 hover:bg-red-600 px-3 py-1 rounded-md text-sm"
               onClick={handleLogout}
             >
               Logout
             </button>
+            <span className="text-sm text-cyan-400">👤 {username}</span>
           </>
         ) : (
           <>

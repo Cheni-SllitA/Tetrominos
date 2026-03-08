@@ -13,7 +13,7 @@ export const updateUserScore = async (score) => {
     userRef,
     {
       email: user.email,
-      score: score,
+      score: increment(score),
       updatedAt: new Date(),
     },
     { merge: true }

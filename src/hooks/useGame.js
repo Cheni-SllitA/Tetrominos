@@ -131,7 +131,7 @@ export const useGame = () => {
 
       if (clearedRows > 0) {
         setScore((prev) => {
-          const newScore = prev + clearedRows * 100;
+          const newScore = prev + clearedRows * 10;
 
           updateUserScore(newScore); // update Firebase
 

@@ -1,23 +1,37 @@
 import "tailwindcss";
-import Navbar from '../components/Navbar';
-
-const leaderboardData = [
-  { rank: 1, name: "Chenitha", score: 4200 },
-  { rank: 2, name: "Dulitha", score: 3800 },
-  { rank: 3, name: "Yasas", score: 3500 },
-  { rank: 4, name: "Ammar", score: 3200 },
-  { rank: 5, name: "Sahan", score: 3000 },
-  { rank: 6, name: "Nimal", score: 2800 },
-  { rank: 7, name: "Kamal", score: 2500 },
-];
+import { useEffect, useState } from "react";
+import { db } from "../services/firebase";
+import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 
 const Leaderboard = () => {
+  const [leaderboardData, setLeaderboardData] = useState([]);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      const q = query(
+        collection(db, "users"),
+        orderBy("highScore", "asc"),
+        limit(10)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      const players = querySnapshot.docs.map((doc, index) => ({
+        rank: index + 1,
+        name: doc.data().username,
+        score: doc.data().score,
+      }));
+
+      setLeaderboardData(players);
+    };
+
+    fetchLeaderboard();
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-indigo-500">
-
-
       <main className="max-w-6xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left panel for stats or info */}
+        {/* Left panel */}
         <div className="lg:col-span-3 order-2 lg:order-1 space-y-6">
           <div className="p-4 bg-slate-900 rounded-xl shadow-md">
             <h3 className="text-lg font-bold text-cyan-400 mb-2">Leaderboard Info</h3>
@@ -55,7 +69,7 @@ const Leaderboard = () => {
           </div>
         </div>
 
-        {/* Right panel for extra info or ads */}
+        {/* Right panel */}
         <div className="lg:col-span-3 order-3 space-y-6">
           <div className="p-4 bg-slate-900 rounded-xl shadow-md">
             <h3 className="text-lg font-bold text-cyan-400 mb-2">Tips</h3>

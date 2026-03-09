@@ -92,10 +92,12 @@ const Register = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-cyan-500 py-2 rounded-md text-slate-950 font-semibold"
+            className="w-full bg-cyan-500 py-2 rounded-md text-white font-semibold"
+             onClick={() => {soundManager.play("click")}}
           >
             {loading ? "Creating..." : "Register"}
           </button>
+          Already have an account? <a href="/login">Login</a>
         </form>
       </div>
     </div>

@@ -2,6 +2,7 @@ import "tailwindcss";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
+import { soundManager } from "../services/soundManager";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -62,11 +63,12 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-cyan-500 py-2 rounded-md text-slate-950 font-semibold"
+            className="w-full bg-cyan-500 py-2 rounded-md text-white font-semibold"
+             onClick={() => {soundManager.play("click")}}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-          <a href="/register">Register</a>
+          Do not have an account? <a href="/register">Register</a>
         </form>
       </div>
     </div>

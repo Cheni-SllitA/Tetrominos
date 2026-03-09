@@ -219,6 +219,7 @@ export const useGame = () => {
     withSpawnPosition,
     randomPiece,
     setBoard,
+    setPaused,
     setCurrent,
     setScore,
     setGameOver,

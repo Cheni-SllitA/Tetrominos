@@ -30,6 +30,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     await logoutUser();
     navigate("/login");
+    soundManager.play("click");
   };
 
   return (
@@ -38,13 +39,13 @@ const Navbar = () => {
       <div className="nav-links flex items-center gap-3">
         <button
           className="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-md text-sm"
-          onClick={() => navigate("/")}
+          onClick={() => { navigate("/"); soundManager.play("click"); }}
         >
           Play
         </button>
         <button
           className="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-md text-sm"
-          onClick={() => navigate("/leaderboard")}
+          onClick={() => {navigate("/leaderboard"); soundManager.play("click");}}
         >
           Leaderboard
         </button>

@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { fetchHeartPuzzle } from "../services/heartService";
 import { updateUserScore } from "../services/scoreService";
 
 const ROWS = 10;
@@ -19,7 +18,6 @@ const randomPiece = () => {
   const keys = Object.keys(TETROMINOS);
   const key = keys[Math.floor(Math.random() * keys.length)];
   const piece = TETROMINOS[key];
-
   return {
     shape: piece.shape.map((row) => [...row]),
     color: piece.color,
@@ -29,7 +27,8 @@ const randomPiece = () => {
 const rotate = (matrix) =>
   matrix[0].map((_, i) => matrix.map((row) => row[i]).reverse());
 
-const emptyBoard = () => Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+const emptyBoard = () =>
+  Array.from({ length: ROWS }, () => Array(COLS).fill(null));
 
 const withSpawnPosition = (piece) => ({
   ...piece,
@@ -44,48 +43,48 @@ export const useGame = () => {
   const [paused, setPaused] = useState(false);
 
   const [lives, setLives] = useState(2);
-  const [checkingHeart, setCheckingHeart] = useState(false);
-  const [heartPuzzle, setHeartPuzzle] = useState(null);
   const [showHeartModal, setShowHeartModal] = useState(false);
   const [heartInProgress, setHeartInProgress] = useState(false);
 
-  const handleGameOver = async () => {
+  // No longer fetches the puzzle here — HeartModal owns that.
+  // We just decide whether to show the modal at all.
+  const handleGameOver = useCallback(() => {
     if (heartInProgress) return;
-
     setHeartInProgress(true);
 
     if (lives > 0) {
-      const puzzle = await fetchHeartPuzzle();
-
-      if (puzzle) {
-        setHeartPuzzle(puzzle);
-        setShowHeartModal(true);
-        // Still mark gameOver so UI shows overlay/button
-        setGameOver(true);
-        return;
-      }
+      // Show the modal — it will fetch its own fresh puzzle
+      setShowHeartModal(true);
+      setGameOver(true);
+      return;
     }
 
+    // No lives left — real game over, no modal
     setGameOver(true);
-  };
+    setHeartInProgress(false);
+  }, [heartInProgress, lives]);
 
-  const submitHeartAnswer = (answer) => {
-    if (!heartPuzzle) return;
+  // Called by HeartModal's onSubmit(answer, puzzle)
+  // puzzle comes from the modal so it always matches what was shown
+  const submitHeartAnswer = useCallback((answer, puzzle) => {
+    if (!puzzle) return;
 
-    if (Number(answer) === Number(heartPuzzle.solution)) {
-      // Correct answer → revive
+    if (Number(answer) === Number(puzzle.solution)) {
+      // ✅ Correct — revive the player
       setLives((prev) => prev - 1);
       setBoard(emptyBoard());
       setCurrent(withSpawnPosition(randomPiece()));
       setShowHeartModal(false);
       setGameOver(false);
     } else {
-      // Wrong answer → real game over
+      // ❌ Wrong — real game over
       setShowHeartModal(false);
       setGameOver(true);
     }
+
     setHeartInProgress(false);
-  };
+  }, []);
+
   const collision = useCallback(
     (shape, pos) => {
       return shape.some((row, r) =>
@@ -114,7 +113,6 @@ export const useGame = () => {
           if (!cell) return;
           const boardRow = current.position.row + r;
           const boardCol = current.position.col + c;
-
           if (
             boardRow >= 0 &&
             boardRow < ROWS &&
@@ -132,9 +130,7 @@ export const useGame = () => {
       if (clearedRows > 0) {
         setScore((prev) => {
           const newScore = prev + clearedRows * 10;
-
-          updateUserScore(newScore); // update Firebase
-
+          updateUserScore(newScore);
           return newScore;
         });
       }
@@ -162,7 +158,7 @@ export const useGame = () => {
 
       return rebuiltBoard;
     });
-  }, [current]);
+  }, [current, handleGameOver]);
 
   const move = useCallback(
     (dir) => {
@@ -170,15 +166,9 @@ export const useGame = () => {
 
       if (dir === "rotate") {
         const rotatedShape = rotate(current.shape);
-
-        // prevent rotating out of bounds / into blocks
         if (!collision(rotatedShape, current.position)) {
-          setCurrent((prev) => ({
-            ...prev,
-            shape: rotatedShape,
-          }));
+          setCurrent((prev) => ({ ...prev, shape: rotatedShape }));
         }
-
         return;
       }
 
@@ -212,8 +202,7 @@ export const useGame = () => {
     gameOver,
     lives,
     showHeartModal,
-    heartPuzzle,
-    submitHeartAnswer,
+    submitHeartAnswer, // signature: (answer, puzzle) => void
     move,
     emptyBoard,
     withSpawnPosition,
@@ -223,6 +212,6 @@ export const useGame = () => {
     setCurrent,
     setScore,
     setGameOver,
-    setShowHeartModal
+    setShowHeartModal,
   };
 };

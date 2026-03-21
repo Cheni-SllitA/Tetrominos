@@ -10,7 +10,7 @@ const Leaderboard = () => {
     const fetchLeaderboard = async () => {
       const q = query(
         collection(db, "users"),
-        orderBy("highScore", "asc"),
+        orderBy("score", "desc"),
         limit(10)
       );
 

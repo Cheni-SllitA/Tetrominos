@@ -17,8 +17,10 @@ const Home = () => {
   });
 
   const resetGame = () => {
+    const revivedCurrent = game.randomPiece();
     game.setBoard(game.emptyBoard());
-    game.setCurrent(game.withSpawnPosition(game.randomPiece()));
+    game.setCurrent(game.withSpawnPosition(revivedCurrent));
+    game.setNextPiece(game.randomPiece());
     game.setScore(0);
     game.setGameOver(false);
   };
@@ -53,7 +55,9 @@ const Home = () => {
         </div>
 
         {/* Right panel */}
-        <div className="lg:col-span-3 order-3 space-y-6"></div>
+        <div className="lg:col-span-3 order-3 space-y-6">
+          <NextPiece piece={game.nextPiece} />
+        </div>
 
       </main>
 

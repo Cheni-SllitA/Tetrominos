@@ -8,14 +8,10 @@ const HeartModal = ({ onSubmit }) => {
   const [showDelivery, setShowDelivery] = useState(false);
   const [jokeLoading, setJokeLoading] = useState(true);
   const [shakeError, setShakeError] = useState(false);
-
-  // Puzzle state now lives here — the modal fetches it directly
-  // so every mount (and every ↻ tap) hits the API fresh.
   const [puzzle, setPuzzle] = useState(null);
   const [puzzleLoading, setPuzzleLoading] = useState(true);
   const [puzzleError, setPuzzleError] = useState(false);
 
-  // Fire both APIs in parallel — neither blocks the other
   const loadAll = async () => {
     setPuzzleLoading(true);
     setPuzzleError(false);
@@ -28,11 +24,7 @@ const HeartModal = ({ onSubmit }) => {
       fetchJoke(),
     ]);
 
-    // ── Puzzle ──────────────────────────────────────────────────
-    if (
-      puzzleResult.status === "fulfilled" &&
-      puzzleResult.value?.question
-    ) {
+    if (puzzleResult.status === "fulfilled" && puzzleResult.value?.question) {
       setPuzzle(puzzleResult.value);
       setPuzzleError(false);
     } else {
@@ -41,7 +33,6 @@ const HeartModal = ({ onSubmit }) => {
     }
     setPuzzleLoading(false);
 
-    // ── Joke ────────────────────────────────────────────────────
     if (jokeResult.status === "fulfilled" && jokeResult.value) {
       setJoke(jokeResult.value);
       if (jokeResult.value.type === "single") setShowDelivery(true);
@@ -51,7 +42,7 @@ const HeartModal = ({ onSubmit }) => {
 
   useEffect(() => {
     loadAll();
-  }, []); // runs once on mount; call loadAll() manually to refresh
+  }, []);
 
   const handleSubmit = () => {
     if (!answer.trim()) {
@@ -59,8 +50,6 @@ const HeartModal = ({ onSubmit }) => {
       setTimeout(() => setShakeError(false), 500);
       return;
     }
-    // Pass the full puzzle object so the caller can validate
-    // against puzzle.solution if needed
     onSubmit(answer, puzzle);
   };
 
@@ -71,68 +60,71 @@ const HeartModal = ({ onSubmit }) => {
   const busy = puzzleLoading || puzzleError;
 
   return (
-    <div style={styles.overlay}>
-      <div style={styles.modal}>
-        <style>{css}</style>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <style>{css}</style>
+      <div className="relative w-full max-w-sm rounded-sm border border-slate-700/60 bg-slate-900 p-6 shadow-2xl"
+        style={{ borderTop: "2px solid #ec4899", animation: "fadeSlideUp 0.25s ease both" }}>
 
-        {/* Scanline texture */}
-        <div style={styles.scanlines} />
+        {/* Scanlines */}
+        <div className="pointer-events-none absolute inset-0 z-0"
+          style={{ background: "repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(236,72,153,0.015) 2px,rgba(236,72,153,0.015) 4px)" }} />
 
-        {/* ── Header ──────────────────────────────────────────── */}
-        <div style={styles.header}>
-          <span style={styles.heartIcon}>♥</span>
-          <span style={styles.title}>SOLVE TO CONTINUE</span>
-          <span style={styles.heartIcon}>♥</span>
+        {/* Header */}
+        <div className="relative z-10 mb-5 flex items-center justify-center gap-3">
+          <span className="text-pink-400" style={{ animation: "heartbeat 1.2s ease-in-out infinite", textShadow: "0 0 10px #ec489988" }}>♥</span>
+          <h2 className="text-xs font-bold tracking-[3px] text-pink-400" style={{ fontFamily: "'Orbitron', monospace", textShadow: "0 0 14px #ec489955" }}>
+            SOLVE TO CONTINUE
+          </h2>
+          <span className="text-pink-400" style={{ animation: "heartbeat 1.2s ease-in-out infinite", textShadow: "0 0 10px #ec489988" }}>♥</span>
         </div>
 
-        {/* ── Puzzle image ─────────────────────────────────────── */}
-        <div style={styles.puzzleWrap}>
-          <div style={styles.puzzleCornerTL} />
-          <div style={styles.puzzleCornerTR} />
-          <div style={styles.puzzleCornerBL} />
-          <div style={styles.puzzleCornerBR} />
+        {/* Puzzle Image */}
+        <div className="relative z-10 mb-2 min-h-[90px] border border-slate-700/50 bg-slate-950 p-3">
+          {/* Corner accents */}
+          <span className="absolute -left-px -top-px h-2.5 w-2.5 border-l-2 border-t-2 border-pink-500" />
+          <span className="absolute -right-px -top-px h-2.5 w-2.5 border-r-2 border-t-2 border-pink-500" />
+          <span className="absolute -bottom-px -left-px h-2.5 w-2.5 border-b-2 border-l-2 border-pink-500" />
+          <span className="absolute -bottom-px -right-px h-2.5 w-2.5 border-b-2 border-r-2 border-pink-500" />
 
-          {/* Loading state */}
           {puzzleLoading && (
-            <div style={styles.puzzlePlaceholder}>
-              <div style={styles.loadingRow}>
-                <span style={styles.dotPink} />
-                <span style={{ ...styles.dotPink, animationDelay: "0.2s" }} />
-                <span style={{ ...styles.dotPink, animationDelay: "0.4s" }} />
+            <div className="flex min-h-[80px] flex-col items-center justify-center gap-3">
+              <div className="flex gap-1.5">
+                {[0, 0.2, 0.4].map((d, i) => (
+                  <span key={i} className="inline-block h-2 w-2 rounded-full bg-pink-500"
+                    style={{ animation: `pulseDot 1.2s ease-in-out ${d}s infinite` }} />
+                ))}
               </div>
-              <span style={styles.loadingLabel}>fetching puzzle...</span>
+              <span className="text-[10px] tracking-[2px] text-slate-600">fetching puzzle...</span>
             </div>
           )}
 
-          {/* Error state */}
           {!puzzleLoading && puzzleError && (
-            <div style={styles.puzzlePlaceholder}>
-              <span style={styles.errorText}>⚠ Could not reach Heart API</span>
-              <button style={styles.retryBtn} onClick={loadAll}>
+            <div className="flex min-h-[80px] flex-col items-center justify-center gap-2.5">
+              <span className="text-[11px] tracking-wide text-red-500">⚠ Could not reach Heart API</span>
+              <button onClick={loadAll}
+                className="rounded-sm border border-red-500/40 px-3 py-1 text-[10px] tracking-widest text-red-500 transition hover:border-red-500/80"
+                style={{ fontFamily: "'Share Tech Mono', monospace", background: "transparent" }}>
                 ↻ retry
               </button>
             </div>
           )}
 
-          {/* Puzzle ready */}
           {!puzzleLoading && !puzzleError && puzzle?.question && (
-            <img
-              src={puzzle.question}
-              alt="Heart Puzzle"
-              style={styles.puzzleImg}
-            />
+            <img src={puzzle.question} alt="Heart Puzzle" className="block w-full rounded-sm" />
           )}
         </div>
 
-        {/* "Different puzzle" link — only when a puzzle is showing */}
+        {/* Refresh link */}
         {!puzzleLoading && !puzzleError && (
-          <button style={styles.refreshBtn} onClick={loadAll}>
+          <button onClick={loadAll}
+            className="relative z-10 mb-3 block bg-transparent p-0 text-[9px] tracking-widest text-slate-700 transition hover:text-slate-500"
+            style={{ fontFamily: "'Share Tech Mono', monospace", border: "none" }}>
             ↻ different puzzle
           </button>
         )}
 
-        {/* ── Answer input ─────────────────────────────────────── */}
-        <div style={styles.inputRow}>
+        {/* Answer Input */}
+        <div className="relative z-10 mb-5 flex gap-2">
           <input
             type="number"
             value={answer}
@@ -141,85 +133,90 @@ const HeartModal = ({ onSubmit }) => {
             placeholder="_ _ _"
             autoFocus
             disabled={busy}
+            className="flex-1 rounded-sm border bg-slate-950 text-center text-lg tracking-[4px] text-slate-100 outline-none transition-colors"
             style={{
-              ...styles.input,
-              ...(shakeError ? styles.inputError : {}),
-              ...(busy ? styles.inputDisabled : {}),
+              fontFamily: "'Share Tech Mono', monospace",
+              padding: "10px 14px",
+              borderColor: shakeError ? "#ef4444" : "#334155",
+              boxShadow: shakeError ? "0 0 8px #ef444444" : "none",
+              opacity: busy ? 0.35 : 1,
+              cursor: busy ? "not-allowed" : "text",
               animation: shakeError ? "shake 0.4s ease" : "none",
             }}
           />
           <button
-            style={{
-              ...styles.submitBtn,
-              ...(busy ? styles.submitDisabled : {}),
-            }}
             onClick={handleSubmit}
             disabled={busy}
-          >
+            className="rounded-sm px-4 py-2 text-xs font-bold tracking-widest text-black transition hover:opacity-90"
+            style={{
+              fontFamily: "'Orbitron', monospace",
+              background: "#ec4899",
+              opacity: busy ? 0.35 : 1,
+              cursor: busy ? "not-allowed" : "pointer",
+              border: "none",
+            }}>
             OK
           </button>
         </div>
 
-        {/* ── Joke section ─────────────────────────────────────── */}
-        <div style={styles.divider}>
-          <div style={styles.dividerLine} />
-          <span style={styles.dividerLabel}>meanwhile...</span>
-          <div style={styles.dividerLine} />
+        {/* Divider */}
+        <div className="relative z-10 mb-3 flex items-center gap-2">
+          <div className="h-px flex-1 bg-slate-800" />
+          <span className="text-[9px] uppercase tracking-[2px] text-slate-600">meanwhile...</span>
+          <div className="h-px flex-1 bg-slate-800" />
         </div>
 
-        <div style={styles.jokeBox}>
+        {/* Joke Box */}
+        <div className="relative z-10 mb-3 min-h-[64px] rounded-r-sm border border-slate-800 bg-slate-950 p-3"
+          style={{ borderLeft: "3px solid #fbbf24" }}>
           {jokeLoading ? (
-            <div style={styles.loadingRow}>
-              <span style={styles.dot} />
-              <span style={{ ...styles.dot, animationDelay: "0.2s" }} />
-              <span style={{ ...styles.dot, animationDelay: "0.4s" }} />
+            <div className="flex items-center justify-center gap-1.5 pt-2">
+              {[0, 0.2, 0.4].map((d, i) => (
+                <span key={i} className="inline-block h-2 w-2 rounded-full bg-yellow-400"
+                  style={{ animation: `pulseDot 1.2s ease-in-out ${d}s infinite` }} />
+              ))}
             </div>
           ) : (
             <>
-              <p style={styles.jokeSetup}>{joke?.setup}</p>
+              <p className="mb-2.5 text-xs leading-relaxed text-slate-400"
+                style={{ fontFamily: "'Share Tech Mono', monospace" }}>
+                {joke?.setup}
+              </p>
 
               {joke?.type === "twopart" && !showDelivery && (
-                <button
-                  style={styles.punchlineBtn}
-                  onClick={() => setShowDelivery(true)}
-                >
+                <button onClick={() => setShowDelivery(true)}
+                  className="rounded-sm border border-yellow-400/30 px-2.5 py-1 text-[10px] tracking-widest text-yellow-400"
+                  style={{ fontFamily: "'Share Tech Mono', monospace", background: "transparent", animation: "blink 1.4s step-end infinite" }}>
                   ▶ reveal punchline
                 </button>
               )}
 
               {showDelivery && joke?.delivery && (
-                <p style={styles.jokeDelivery}>
-                  <span style={styles.arrow}>▶ </span>
+                <p className="text-xs leading-relaxed text-yellow-400"
+                  style={{ fontFamily: "'Share Tech Mono', monospace", animation: "deliveryAppear 0.35s ease both" }}>
+                  <span className="text-[9px] opacity-70">▶ </span>
                   {joke.delivery}
                 </p>
               )}
 
               {joke?.isFallback && (
-                <span style={styles.offlineNote}>offline fallback</span>
+                <span className="mt-1.5 block text-[9px] italic text-slate-700">offline fallback</span>
               )}
             </>
           )}
         </div>
 
-        {/* ── Attribution ──────────────────────────────────────── */}
-        <p style={styles.attribution}>
+        {/* Attribution */}
+        <p className="relative z-10 text-center text-[9px] tracking-widest text-slate-800">
           puzzles by{" "}
-          <a
-            href="https://marcconrad.com/uob/heart"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={styles.link}
-          >
+          <a href="https://marcconrad.com/uob/heart" target="_blank" rel="noopener noreferrer"
+            className="text-slate-700 no-underline hover:text-slate-500">
             marcconrad.com
           </a>
           {" · "}
           jokes by{" "}
-          <a
-            href="https://jokeapi.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={styles.link}
-          >
+          <a href="https://jokeapi.dev" target="_blank" rel="noopener noreferrer"
+            className="text-slate-700 no-underline hover:text-slate-500">
             jokeapi.dev
           </a>
         </p>
@@ -228,262 +225,6 @@ const HeartModal = ({ onSubmit }) => {
   );
 };
 
-/* ── Styles ──────────────────────────────────────────────────── */
-const styles = {
-  overlay: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(0,0,0,0.82)",
-    backdropFilter: "blur(4px)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 50,
-  },
-  modal: {
-    position: "relative",
-    background: "#0a0a0f",
-    border: "1px solid #1a1a2e",
-    borderTop: "2px solid #ff6b9d",
-    borderRadius: "4px",
-    padding: "24px 22px 16px",
-    width: "min(360px, 92vw)",
-    overflow: "hidden",
-    fontFamily: "'Share Tech Mono', monospace",
-    animation: "fadeSlideUp 0.25s ease both",
-  },
-  scanlines: {
-    position: "absolute",
-    inset: 0,
-    background:
-      "repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,107,157,0.018) 2px,rgba(255,107,157,0.018) 4px)",
-    pointerEvents: "none",
-    zIndex: 0,
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "10px",
-    marginBottom: "18px",
-  },
-  heartIcon: {
-    color: "#ff6b9d",
-    fontSize: "16px",
-    animation: "heartbeat 1.2s ease-in-out infinite",
-    display: "inline-block",
-    textShadow: "0 0 10px #ff6b9d88",
-  },
-  title: {
-    fontFamily: "'Orbitron', monospace",
-    fontSize: "13px",
-    fontWeight: 700,
-    color: "#ff6b9d",
-    letterSpacing: "3px",
-    textShadow: "0 0 14px #ff6b9d55",
-  },
-  puzzleWrap: {
-    position: "relative",
-    marginBottom: "8px",
-    padding: "10px",
-    background: "#0f0f1a",
-    border: "1px solid #1a1a2e",
-    minHeight: "90px",
-  },
-  puzzleCornerTL: { position: "absolute", top: -1, left: -1, width: 10, height: 10, borderTop: "2px solid #ff6b9d", borderLeft: "2px solid #ff6b9d" },
-  puzzleCornerTR: { position: "absolute", top: -1, right: -1, width: 10, height: 10, borderTop: "2px solid #ff6b9d", borderRight: "2px solid #ff6b9d" },
-  puzzleCornerBL: { position: "absolute", bottom: -1, left: -1, width: 10, height: 10, borderBottom: "2px solid #ff6b9d", borderLeft: "2px solid #ff6b9d" },
-  puzzleCornerBR: { position: "absolute", bottom: -1, right: -1, width: 10, height: 10, borderBottom: "2px solid #ff6b9d", borderRight: "2px solid #ff6b9d" },
-  puzzleImg: {
-    display: "block",
-    width: "100%",
-    borderRadius: "2px",
-  },
-  puzzlePlaceholder: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "10px",
-    minHeight: "80px",
-  },
-  loadingLabel: {
-    fontSize: "10px",
-    color: "#444",
-    letterSpacing: "2px",
-  },
-  errorText: {
-    fontSize: "11px",
-    color: "#ff4444",
-    letterSpacing: "1px",
-  },
-  retryBtn: {
-    background: "transparent",
-    border: "1px solid #ff444466",
-    color: "#ff4444",
-    fontFamily: "'Share Tech Mono', monospace",
-    fontSize: "10px",
-    padding: "4px 10px",
-    borderRadius: "2px",
-    cursor: "pointer",
-    letterSpacing: "1px",
-  },
-  refreshBtn: {
-    display: "block",
-    background: "transparent",
-    border: "none",
-    color: "#2e2e44",
-    fontFamily: "'Share Tech Mono', monospace",
-    fontSize: "9px",
-    letterSpacing: "1px",
-    cursor: "pointer",
-    marginBottom: "12px",
-    padding: 0,
-    transition: "color 0.15s",
-  },
-  inputRow: {
-    display: "flex",
-    gap: "8px",
-    marginBottom: "18px",
-  },
-  input: {
-    flex: 1,
-    background: "#0f0f1a",
-    border: "1px solid #2a2a3e",
-    borderRadius: "3px",
-    color: "#e8e8f0",
-    fontFamily: "'Share Tech Mono', monospace",
-    fontSize: "18px",
-    padding: "10px 14px",
-    outline: "none",
-    letterSpacing: "4px",
-    textAlign: "center",
-    transition: "border-color 0.2s",
-  },
-  inputError: {
-    borderColor: "#ff4444",
-    boxShadow: "0 0 8px #ff444444",
-  },
-  inputDisabled: {
-    opacity: 0.35,
-    cursor: "not-allowed",
-  },
-  submitBtn: {
-    background: "#ff6b9d",
-    border: "none",
-    borderRadius: "3px",
-    color: "#000",
-    fontFamily: "'Orbitron', monospace",
-    fontSize: "12px",
-    fontWeight: 700,
-    padding: "10px 16px",
-    cursor: "pointer",
-    letterSpacing: "1px",
-  },
-  submitDisabled: {
-    opacity: 0.35,
-    cursor: "not-allowed",
-  },
-  divider: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    marginBottom: "12px",
-  },
-  dividerLine: {
-    flex: 1,
-    height: "1px",
-    background: "#1a1a2e",
-  },
-  dividerLabel: {
-    fontSize: "9px",
-    color: "#444",
-    letterSpacing: "2px",
-    textTransform: "uppercase",
-    whiteSpace: "nowrap",
-  },
-  jokeBox: {
-    background: "#0f0f1a",
-    border: "1px solid #1a1a2e",
-    borderLeft: "3px solid #ffd93d",
-    borderRadius: "0 3px 3px 0",
-    padding: "12px 14px",
-    minHeight: "64px",
-    marginBottom: "12px",
-  },
-  loadingRow: {
-    display: "flex",
-    gap: "5px",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: "8px",
-  },
-  dot: {
-    display: "inline-block",
-    width: "7px",
-    height: "7px",
-    borderRadius: "50%",
-    background: "#ffd93d",
-    animation: "pulseDot 1.2s ease-in-out infinite",
-  },
-  dotPink: {
-    display: "inline-block",
-    width: "7px",
-    height: "7px",
-    borderRadius: "50%",
-    background: "#ff6b9d",
-    animation: "pulseDot 1.2s ease-in-out infinite",
-  },
-  jokeSetup: {
-    margin: "0 0 10px",
-    fontSize: "12px",
-    color: "#b0b0c0",
-    lineHeight: 1.6,
-  },
-  punchlineBtn: {
-    background: "transparent",
-    border: "1px solid #ffd93d44",
-    color: "#ffd93d",
-    fontFamily: "'Share Tech Mono', monospace",
-    fontSize: "10px",
-    letterSpacing: "1px",
-    padding: "5px 10px",
-    borderRadius: "2px",
-    cursor: "pointer",
-    animation: "blink 1.4s step-end infinite",
-  },
-  jokeDelivery: {
-    margin: 0,
-    fontSize: "12px",
-    color: "#ffd93d",
-    lineHeight: 1.6,
-    animation: "deliveryAppear 0.35s ease both",
-  },
-  arrow: {
-    fontSize: "9px",
-    opacity: 0.7,
-  },
-  offlineNote: {
-    display: "block",
-    marginTop: "6px",
-    fontSize: "9px",
-    color: "#333",
-    fontStyle: "italic",
-  },
-  attribution: {
-    margin: 0,
-    textAlign: "center",
-    fontSize: "9px",
-    color: "#2a2a3e",
-    letterSpacing: "1px",
-  },
-  link: {
-    color: "#383850",
-    textDecoration: "none",
-  },
-};
-
-/* ── Keyframes ───────────────────────────────────────────────── */
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap');
 

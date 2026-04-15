@@ -36,6 +36,7 @@ const withSpawnPosition = (piece) => ({
 });
 
 export const useGame = () => {
+  const [nextPiece, setNextPiece] = useState(() => randomPiece());
   const [board, setBoard] = useState(emptyBoard);
   const [current, setCurrent] = useState(() => withSpawnPosition(randomPiece()));
   const [score, setScore] = useState(0);
@@ -70,14 +71,16 @@ export const useGame = () => {
     if (!puzzle) return;
 
     if (Number(answer) === Number(puzzle.solution)) {
-      // ✅ Correct — revive the player
+      // Correct — revive the player
+      const revivedCurrent = randomPiece();
       setLives((prev) => prev - 1);
       setBoard(emptyBoard());
-      setCurrent(withSpawnPosition(randomPiece()));
+      setCurrent(withSpawnPosition(revivedCurrent));
+      setNextPiece(randomPiece());
       setShowHeartModal(false);
       setGameOver(false);
     } else {
-      // ❌ Wrong — real game over
+      // Wrong — real game over
       setShowHeartModal(false);
       setGameOver(true);
     }
@@ -140,12 +143,12 @@ export const useGame = () => {
         ...keptRows,
       ];
 
-      const nextPiece = withSpawnPosition(randomPiece());
-      const spawnBlocked = nextPiece.shape.some((row, r) =>
+      const queuedPiece = withSpawnPosition(nextPiece);
+      const spawnBlocked = queuedPiece.shape.some((row, r) =>
         row.some((cell, c) => {
           if (!cell) return false;
-          const boardRow = nextPiece.position.row + r;
-          const boardCol = nextPiece.position.col + c;
+          const boardRow = queuedPiece.position.row + r;
+          const boardCol = queuedPiece.position.col + c;
           return rebuiltBoard[boardRow] && rebuiltBoard[boardRow][boardCol];
         })
       );
@@ -153,12 +156,13 @@ export const useGame = () => {
       if (spawnBlocked) {
         handleGameOver();
       } else {
-        setCurrent(nextPiece);
+        setCurrent(queuedPiece);
+        setNextPiece(randomPiece());
       }
 
       return rebuiltBoard;
     });
-  }, [current, handleGameOver]);
+  }, [current, handleGameOver, nextPiece]);
 
   const move = useCallback(
     (dir) => {
@@ -198,8 +202,10 @@ export const useGame = () => {
   return {
     board,
     current,
+    nextPiece,
     score,
     gameOver,
+    paused,
     lives,
     showHeartModal,
     submitHeartAnswer, // signature: (answer, puzzle) => void
@@ -210,6 +216,7 @@ export const useGame = () => {
     setBoard,
     setPaused,
     setCurrent,
+    setNextPiece,
     setScore,
     setGameOver,
     setShowHeartModal,

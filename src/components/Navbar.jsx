@@ -1,31 +1,57 @@
 import "tailwindcss";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../services/firebase";
-import { logoutUser } from "../services/authService";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { logoutUser } from "../services/authService";
+import { auth, db } from "../services/firebase";
 import { soundManager } from "../services/soundManager";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState(null);
+  const [userProfile, setUserProfile] = useState({
+    isAuthenticated: false,
+    name: "",
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Fetch username from Firestore
+      if (!user) {
+        setUserProfile({
+          isAuthenticated: false,
+          name: "",
+        });
+        return;
+      }
+
+      const fallbackName =
+        user.displayName || user.email?.split("@")[0] || "Player";
+
+      try {
         const docSnap = await getDoc(doc(db, "users", user.uid));
-        if (docSnap.exists()) {
-          setUsername(docSnap.data().username);
-        }
-      } else {
-        setUsername(null);
+        const storedUsername = docSnap.exists()
+          ? docSnap.data().username
+          : null;
+
+        setUserProfile({
+          isAuthenticated: true,
+          name: storedUsername || fallbackName,
+        });
+      } catch {
+        setUserProfile({
+          isAuthenticated: true,
+          name: fallbackName,
+        });
       }
     });
+
     return () => unsubscribe();
   }, []);
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    soundManager.play("click");
+  };
 
   const handleLogout = async () => {
     await logoutUser();
@@ -34,44 +60,46 @@ const Navbar = () => {
   };
 
   return (
-    <div className="navbar flex items-center justify-between p-4 bg-slate-900 text-white">
+    <div className="navbar flex flex-wrap items-center justify-between gap-3 bg-slate-900 p-4 text-white">
       <h2 className="text-xl font-bold text-cyan-400">Tetrominos</h2>
-      <div className="nav-links flex items-center gap-3">
+
+      <div className="ml-auto flex items-center gap-3">
         <button
-          className="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-md text-sm"
-          onClick={() => { navigate("/"); soundManager.play("click"); }}
+          className="rounded-md bg-slate-800 px-3 py-1 text-sm hover:bg-slate-700"
+          onClick={() => handleNavigate("/")}
         >
           Play
         </button>
         <button
-          className="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-md text-sm"
-          onClick={() => {navigate("/leaderboard"); soundManager.play("click");}}
+          className="rounded-md bg-slate-800 px-3 py-1 text-sm hover:bg-slate-700"
+          onClick={() => handleNavigate("/leaderboard")}
         >
           Leaderboard
         </button>
 
-        {username ? (
+        {userProfile.isAuthenticated ? (
           <>
-            
+            <span className="rounded-full border border-cyan-500/40 bg-slate-800 px-3 py-1 text-sm text-cyan-300">
+              {userProfile.name}
+            </span>
             <button
-              className="bg-red-700 hover:bg-red-600 px-3 py-1 rounded-md text-sm"
+              className="rounded-md bg-red-700 px-3 py-1 text-sm hover:bg-red-600"
               onClick={handleLogout}
             >
               Logout
             </button>
-            <span className="text-sm text-cyan-400">👤 {username}</span>
           </>
         ) : (
           <>
             <button
-              className="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-md text-sm"
-              onClick={() => navigate("/login")}
+              className="rounded-md bg-slate-800 px-3 py-1 text-sm hover:bg-slate-700"
+              onClick={() => handleNavigate("/login")}
             >
               Login
             </button>
             <button
-              className="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-md text-sm"
-              onClick={() => navigate("/register")}
+              className="rounded-md bg-slate-800 px-3 py-1 text-sm hover:bg-slate-700"
+              onClick={() => handleNavigate("/register")}
             >
               Register
             </button>

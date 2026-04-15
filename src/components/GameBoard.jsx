@@ -1,6 +1,3 @@
-import React from "react";
-import { useState } from "react";
-import { updateUserScore } from "../services/scoreService";
 const GameBoard = ({ board, current, gameOver, score, onHeartClick }) => {
   return (
 

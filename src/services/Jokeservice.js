@@ -1,6 +1,5 @@
 // jokeService.js
-// Fetches jokes from JokeAPI (https://jokeapi.dev) — no API key required.
-// Kept isolated from game logic to demonstrate low coupling / high cohesion.
+// Fetches jokes from JokeAPI (https://jokeapi.dev)
 
 const JOKE_API_BASE = "https://v2.jokeapi.dev/joke";
 

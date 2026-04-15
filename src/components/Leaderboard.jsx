@@ -2,6 +2,7 @@ import "tailwindcss";
 import { useEffect, useState } from "react";
 import { db } from "../services/firebase";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { getLeaderboard } from "../services/leaderboardService";
 
 const Leaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
